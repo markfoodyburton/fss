@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="can_initiator"
+    instantiationToken="can_initiator"
+    description="FMI-LS-BUS CAN sender: emits one CanTransmit frame per Tx_Clock tick.">
+  <CoSimulation modelIdentifier="can_initiator"
+      hasEventMode="true"
+      canHandleVariableCommunicationStepSize="true"/>
+  <ModelVariables>
+    <!-- Time-based output clock with a constant period: one tick per CAN frame. -->
+    <Clock name="Tx_Clock" valueReference="2"
+        causality="output" variability="discrete" intervalVariability="constant"/>
+    <!-- Serialised CanTransmit operation buffer, clocked by Tx_Clock. -->
+    <Binary name="Tx_Data" valueReference="1" causality="output" variability="discrete"
+        mimeType="application/org.fmi-standard.fmi-ls-bus.can; version=&quot;1.0.0&quot;"
+        clocks="2"/>
+    <!-- Count of frames emitted so far (observable). -->
+    <UInt64 name="TxCount" valueReference="3" causality="output" variability="discrete"/>
+  </ModelVariables>
+  <ModelStructure>
+    <Output valueReference="1"/>
+    <Output valueReference="3"/>
+  </ModelStructure>
+</fmiModelDescription>

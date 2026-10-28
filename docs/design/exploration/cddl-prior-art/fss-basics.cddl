@@ -1,0 +1,73 @@
+; ============================================================================
+;   fss-community:basics — universally-useful descriptors
+; ============================================================================
+;
+;   Package:   fss-community:basics
+;   Version:   0.1.0
+;   Status:    NON-NORMATIVE community example
+;
+;   A small set of descriptors that recur across most FSS deployments —
+;   identity, time, status, error.  They are NOT part of the FSS
+;   standard; the standard allocates no descriptors at all.  This
+;   package exists as a pragmatic starting point that other community
+;   packages may import and reuse.
+;
+;   If a deployment doesn't need (say) `time`, it MUST NOT be forced
+;   to depend on this package.  The standard's bag mechanism does not
+;   require any descriptor to be present.
+;
+; ----------------------------------------------------------------------------
+
+; Node identity.  Goes in any bag where naming a participant matters,
+; especially the manifest bag (see fss-discovery.cddl).
+;
+; qname: "fss-community:basics/identity"
+fss-community-basics-identity = {
+    name:     tstr,                ; locally unique node name
+    version:  tstr,                ; node implementation version, semver-style
+    ? vendor: tstr,
+    ? tags:   [* tstr],            ; ad-hoc capability tags ("real-time", ...)
+}
+
+; Super-dense simulation time.
+;   `seconds` is the continuous coordinate.
+;   `step` is a discrete-event counter that orders events at the same
+;     `seconds` value.  Two values with identical `seconds` and
+;     different `step` are ordered by `step`; identical (seconds, step)
+;     are unordered.
+;
+; qname: "fss-community:basics/time"
+fss-community-basics-time = {
+    seconds: float64,
+    step:    uint .size 8,
+}
+
+; Half-open time window [from, to).
+;
+; qname: "fss-community:basics/time-window"
+fss-community-basics-time-window = {
+    from: fss-community-basics-time,
+    to:   fss-community-basics-time,
+}
+
+; Generic operation status.  Domain packages MAY supplement this with
+; their own richer error variants in their own descriptors.
+;
+; qname: "fss-community:basics/status"
+fss-community-basics-status =
+      "ok"
+    / "decode-error"
+    / "slave-error"
+    / "timeout"
+    / "cancelled"
+    / "unsupported"
+    / "other"
+
+; Structured error.  Use when a status alone is insufficient.
+;
+; qname: "fss-community:basics/error"
+fss-community-basics-error = {
+    status:    fss-community-basics-status,
+    ? message: tstr,
+    ? cause:   tstr,                ; vendor-specific error identifier
+}

@@ -1,0 +1,34 @@
+# CMake build tree
+build/
+
+# macOS
+.DS_Store
+
+# Editor
+.idea/
+*.swp
+*.swo
+
+# Rust build artefacts (crates build out-of-source via CMake, but guard
+# against an in-source `cargo build`/`cargo test` too)
+**/target/
+**/Cargo.lock
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Legacy / archived material
+old/
+
+# Local documentation source material
+/docs/papers/
+/docs/slides/
+
+# Session artefacts (Claude Code transcripts / summaries / caches)
+.cache/
+2026-*.txt
+SESSION_SUMMARY_*.md
+
+# ctest scratch output
+Testing/

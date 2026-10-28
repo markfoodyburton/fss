@@ -1,0 +1,12 @@
+[package]
+name = "fss_can_controller_queued_rust"
+version = "0.2.0"
+edition = "2021"
+description = "FSS artefact: time-synced queued CAN controller in Rust (cdylib loaded by a transport)"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+fss = { path = "../../../languages/rust" }

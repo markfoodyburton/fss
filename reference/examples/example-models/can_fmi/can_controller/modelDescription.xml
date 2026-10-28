@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="can_controller"
+    instantiationToken="can_controller"
+    description="FMI-LS-BUS CAN controller: queues a transmit request from Rx_Data and emits the CAN frame on Tx_Data after a step (time passes).">
+  <CoSimulation modelIdentifier="can_controller"
+      hasEventMode="true"
+      canHandleVariableCommunicationStepSize="true"/>
+  <ModelVariables>
+    <!-- Triggered input clock: a transmit request arrived. -->
+    <Clock name="Rx_Clock" valueReference="2"
+        causality="input" variability="discrete" intervalVariability="triggered"/>
+    <!-- Incoming CanTransmit request buffer, clocked by Rx_Clock. -->
+    <Binary name="Rx_Data" valueReference="1" causality="input" variability="discrete"
+        mimeType="application/org.fmi-standard.fmi-ls-bus.can; version=&quot;1.0.0&quot;"
+        clocks="2"/>
+    <!-- Triggered output clock: a frame is ready to go on the bus. -->
+    <Clock name="Tx_Clock" valueReference="4"
+        causality="output" variability="discrete" intervalVariability="triggered"/>
+    <!-- Outgoing CAN frame buffer, clocked by Tx_Clock. -->
+    <Binary name="Tx_Data" valueReference="3" causality="output" variability="discrete"
+        mimeType="application/org.fmi-standard.fmi-ls-bus.can; version=&quot;1.0.0&quot;"
+        clocks="4"/>
+    <!-- Observable: frames forwarded so far. -->
+    <UInt64 name="FwdCount" valueReference="5" causality="output" variability="discrete"/>
+  </ModelVariables>
+  <ModelStructure>
+    <Output valueReference="3"/>
+    <Output valueReference="4"/>
+    <Output valueReference="5"/>
+  </ModelStructure>
+</fmiModelDescription>

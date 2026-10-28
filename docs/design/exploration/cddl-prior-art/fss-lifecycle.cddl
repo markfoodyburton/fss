@@ -1,0 +1,51 @@
+; ============================================================================
+;   fss-community:lifecycle — node lifecycle qnames
+; ============================================================================
+;
+;   Package:   fss-community:lifecycle
+;   Version:   0.1.0
+;   Status:    NON-NORMATIVE community example
+;
+;   The FSS standard does not impose a lifecycle.  This package is one
+;   convention: a node opens a bag-stream named "lifecycle" and accepts
+;   bags carrying these well-known qnames.  Each request is a bag with
+;   one of the request descriptors; the response is a bag carrying a
+;   lifecycle-result.
+;
+; ----------------------------------------------------------------------------
+
+; Request to transition `created` → `initialised`.
+; qname: "fss-community:lifecycle/initialise"
+;
+; Payload is empty (a CBOR null) by default; implementations MAY accept
+; a configuration sub-bag if they document it.
+fss-community-lifecycle-initialise = null / fss-bag
+
+; Request to transition `initialised` → `running`.
+; qname: "fss-community:lifecycle/start"
+fss-community-lifecycle-start = null
+
+; Request to transition `running` → `stopped`.
+; qname: "fss-community:lifecycle/stop"
+fss-community-lifecycle-stop = null
+
+; Request to transition `stopped` → `finalised`.
+; qname: "fss-community:lifecycle/finalise"
+fss-community-lifecycle-finalise = null
+
+; Lifecycle response.
+; qname: "fss-community:lifecycle/result"
+fss-community-lifecycle-result = {
+    status:    fss-community-basics-status,    ; defined in fss-basics.cddl
+    ? message: tstr,
+    ? phase:   fss-community-lifecycle-phase,
+}
+
+; Current lifecycle phase.
+; qname: "fss-community:lifecycle/phase"
+fss-community-lifecycle-phase =
+      "created"
+    / "initialised"
+    / "running"
+    / "stopped"
+    / "finalised"

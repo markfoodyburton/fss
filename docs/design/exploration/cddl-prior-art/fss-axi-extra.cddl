@@ -1,0 +1,43 @@
+; ============================================================================
+;   fss-community:axi-extra — AXI-specific extension fields
+; ============================================================================
+;
+;   Package:   fss-community:axi-extra
+;   Version:   0.1.0
+;   Status:    NON-NORMATIVE community example
+;
+;   Demonstrates how a vendor or community group adds new fields
+;   *orthogonally* to existing TLM-fields descriptors.  A receiver
+;   that understands fss-community:tlm-fields but not this package
+;   passes these fields through unchanged.
+;
+; ----------------------------------------------------------------------------
+
+; AXI cache attributes (AxCACHE bits [3:0]).
+; qname: "fss-community:axi-extra/cache-attr"
+fss-community-axi-extra-cache-attr = {
+    bufferable:     bool,
+    modifiable:     bool,
+    read-allocate:  bool,
+    write-allocate: bool,
+}
+
+; AXI protection attributes (AxPROT[2:0]).
+; qname: "fss-community:axi-extra/prot-attr"
+fss-community-axi-extra-prot-attr = {
+    privileged:    bool,
+    non-secure:    bool,
+    instruction:   bool,
+}
+
+; AXI ID for in-flight transaction tracking.
+; qname: "fss-community:axi-extra/id"
+fss-community-axi-extra-id = uint .size 4
+
+; Burst type.
+; qname: "fss-community:axi-extra/burst"
+fss-community-axi-extra-burst = "fixed" / "incr" / "wrap"
+
+; Burst length in beats.
+; qname: "fss-community:axi-extra/burst-length"
+fss-community-axi-extra-burst-length = uint .size 4

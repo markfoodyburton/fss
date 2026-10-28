@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="can_target"
+    instantiationToken="can_target"
+    description="FMI-LS-BUS CAN receiver: decodes CanTransmit frames from Rx_Data on each Rx_Clock tick.">
+  <CoSimulation modelIdentifier="can_target"
+      hasEventMode="true"
+      canHandleVariableCommunicationStepSize="true"/>
+  <ModelVariables>
+    <!-- Triggered input clock: activated by the bus when a frame arrives. -->
+    <Clock name="Rx_Clock" valueReference="2"
+        causality="input" variability="discrete" intervalVariability="triggered"/>
+    <!-- Serialised CanTransmit operation buffer, clocked by Rx_Clock. -->
+    <Binary name="Rx_Data" valueReference="1" causality="input" variability="discrete"
+        mimeType="application/org.fmi-standard.fmi-ls-bus.can; version=&quot;1.0.0&quot;"
+        clocks="2"/>
+    <!-- Observable view of the last received frame + running count. -->
+    <UInt32 name="LastId"    valueReference="3" causality="output" variability="discrete"/>
+    <UInt64 name="RxCount"   valueReference="4" causality="output" variability="discrete"/>
+    <UInt32 name="LastByte0" valueReference="5" causality="output" variability="discrete"/>
+    <UInt32 name="LastDlc"   valueReference="6" causality="output" variability="discrete"/>
+  </ModelVariables>
+  <ModelStructure>
+    <Output valueReference="3"/>
+    <Output valueReference="4"/>
+    <Output valueReference="5"/>
+    <Output valueReference="6"/>
+  </ModelStructure>
+</fmiModelDescription>

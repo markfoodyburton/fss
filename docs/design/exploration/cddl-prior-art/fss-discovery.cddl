@@ -1,0 +1,38 @@
+; ============================================================================
+;   fss-community:discovery — discovery / manifest descriptors
+; ============================================================================
+;
+;   Package:   fss-community:discovery
+;   Version:   0.1.0
+;   Status:    NON-NORMATIVE community example
+;
+;   Discovery in FSS is a convention over the bag mechanism: a node
+;   publishes a "manifest bag" on a transport-defined channel, peers
+;   subscribe.  The manifest bag's contents are these descriptors.
+;
+; ----------------------------------------------------------------------------
+
+; A bag-stream the node opens.
+; qname: "fss-community:discovery/stream"
+fss-community-discovery-stream = {
+    purpose:        tstr,            ; well-known purpose qname,
+                                     ; e.g. "fss-community:tlm-fields/bus"
+    transport-name: tstr,            ; transport-specific name,
+                                     ; e.g. a Zenoh key
+    direction:      "in" / "out" / "bidirectional",
+    ? descriptors:  [* fss-community-discovery-descriptor-ref],
+}
+
+; A reference to a descriptor by qname + version.
+; qname: "fss-community:discovery/descriptor-ref"
+fss-community-discovery-descriptor-ref = {
+    qname:   tstr,
+    version: tstr,
+}
+
+; A package supported by this node, by name + version.
+; qname: "fss-community:discovery/package-ref"
+fss-community-discovery-package-ref = {
+    name:    tstr,                ; e.g. "fss-community:tlm-fields"
+    version: tstr,                ; e.g. "0.1.0"
+}

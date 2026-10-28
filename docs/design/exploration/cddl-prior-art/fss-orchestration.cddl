@@ -1,0 +1,120 @@
+; ============================================================================
+;   fss-community:orchestration — hierarchical orchestration vocabulary
+; ============================================================================
+;
+;   Package:   fss-community:orchestration
+;   Version:   0.1.0
+;   Status:    NON-NORMATIVE community example
+;
+;   Bag-field descriptors for orchestration of an FSS federation:
+;   spawning children, distributing configuration, wiring ports,
+;   driving lifecycle.  See ../../binding-and-phases.md and the
+;   "node and orchestrator" roles in ../../../spec/00-object-model.md
+;   for the architectural picture.
+;
+;   None of this is in the FSS standard.  An orchestrator that uses
+;   these descriptors is interoperable with any node that
+;   understands them; deployments that prefer a different
+;   orchestration vocabulary are free to use one.
+;
+; ----------------------------------------------------------------------------
+
+; A reference to a peer reachable through some transport.
+;
+; The encoding of `endpoint` depends on `transport`:
+;   - "zenoh":   the peer's base key prefix, e.g. "fss/cpu0"
+;   - "in-proc": opaque handle ID (encoded as the address as text)
+;   - "fmi":     FMI instance name + variable group
+;   - "tcp":     URL like "tcp://host:port/path"
+;
+; qname: "fss-community:orchestration/peer-ref"
+fss-community-orchestration-peer-ref = {
+    name:      tstr,            ; peer's locally-unique name
+    transport: tstr,            ; transport identifier
+    endpoint:  tstr,            ; transport-specific reference
+}
+
+; "Use this peer for orchestration commands and configuration."
+;
+; Sent in the bootstrap bag a parent delivers to a freshly-spawned
+; child.  Establishes the parent-child relationship for the
+; remainder of the child's lifetime.
+;
+; qname: "fss-community:orchestration/parent"
+fss-community-orchestration-parent = fss-community-orchestration-peer-ref
+
+; "Ask this peer for your configuration."
+;
+; Usually the parent, but a deployment may separate config service
+; from orchestration service.  Once a child has this peer-ref, all
+; configuration access happens as ordinary bag exchanges on a stream
+; the config-source advertises — there is no orchestration-specific
+; config protocol.  Deployments pick their own config descriptors
+; (a key/value pattern, a typed record, anything CBOR-shaped).
+;
+; qname: "fss-community:orchestration/config-source"
+fss-community-orchestration-config-source = fss-community-orchestration-peer-ref
+
+; ----------------------------------------------------------------------------
+; Spawn / instantiate
+; ----------------------------------------------------------------------------
+
+; Parent → child: "spawn a sub-component on my behalf."
+;
+; Sent to a node that's capable of spawning sub-components — a
+; container, a plugin host, a kubernetes operator.  The receiver
+; creates the named child and sends back a peer-ref to it.
+;
+; qname: "fss-community:orchestration/spawn"
+fss-community-orchestration-spawn = {
+    name: tstr,                 ; locally-unique name for the new child
+    type: tstr,                 ; how to instantiate, e.g.
+                                ;   "fss-plugin:libfoo.so"
+                                ;   "container:registry.example/foo:1.2"
+                                ;   "fmi:foo.fmu"
+    ? config: fss-bag,          ; initial config bag for the new child
+}
+
+; Reply to a spawn: success carries the new child's peer-ref.
+; qname: "fss-community:orchestration/spawn-result"
+fss-community-orchestration-spawn-result = {
+    status:  fss-community-basics-status,
+    ? peer:  fss-community-orchestration-peer-ref,
+    ? error: tstr,
+}
+
+; ----------------------------------------------------------------------------
+; Connection wiring
+; ----------------------------------------------------------------------------
+
+; Parent → child: "wire your local port to a remote port on another peer."
+;
+; Receiver looks up its own port `local-port` (from its manifest),
+; resolves the peer-ref to a transport-specific endpoint, and
+; establishes the connection.  The child is the active party.
+;
+; qname: "fss-community:orchestration/connect-port"
+fss-community-orchestration-connect-port = {
+    local-port:      tstr,      ; port name in the receiver's manifest
+    peer:            fss-community-orchestration-peer-ref,
+    peer-port:       tstr,      ; port name in the peer's manifest
+    ? bidirectional: bool,      ; if true, wire both directions
+}
+
+; Parent → child: "tear down a connection."
+; qname: "fss-community:orchestration/disconnect-port"
+fss-community-orchestration-disconnect-port = {
+    local-port:  tstr,
+    ? peer-port: tstr,          ; if absent, disconnect all pairings
+}
+
+; ----------------------------------------------------------------------------
+; Acknowledgement
+; ----------------------------------------------------------------------------
+
+; Child → parent: generic ack/nack for an orchestration command.
+; qname: "fss-community:orchestration/ack"
+fss-community-orchestration-ack = {
+    status:    fss-community-basics-status,
+    ? message: tstr,
+}

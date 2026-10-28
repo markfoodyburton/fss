@@ -1,0 +1,55 @@
+; ============================================================================
+;   fss-community:tlm-fields — TLM bus field descriptors
+; ============================================================================
+;
+;   Package:   fss-community:tlm-fields
+;   Version:   0.1.0
+;   Status:    NON-NORMATIVE community example
+;
+;   Field descriptors for transaction-level memory-bus modelling.
+;   Mirrors the fields the qbox `fssBusIf` test code carried by
+;   convention (address / size / direction / payload), but as
+;   typed, versioned, self-describing descriptors.
+;
+;   Any subset of these may appear in a TLM bag.  Receivers ignore
+;   unknown fields.  Vendors add their own orthogonal fields in
+;   their own packages (see fss-axi-extra.cddl).
+;
+; ----------------------------------------------------------------------------
+
+; Bus address.  qname: "fss-community:tlm-fields/address"
+fss-community-tlm-fields-address = {
+    space:  tstr,                ; address-space identifier ("" = default)
+    offset: uint .size 8,        ; byte offset within the space
+}
+
+; Access size in bytes.  qname: "fss-community:tlm-fields/size"
+fss-community-tlm-fields-size = {
+    bytes: uint .size 8,
+}
+
+; Direction.  qname: "fss-community:tlm-fields/direction"
+fss-community-tlm-fields-direction = "read" / "write"
+
+; Payload bytes.  qname: "fss-community:tlm-fields/payload"
+;
+; For writes, the data to be written.  For reads, present in the
+; response carrying the read-back data.
+fss-community-tlm-fields-payload = bstr
+
+; Response status.  qname: "fss-community:tlm-fields/response-status"
+;
+; Often unnecessary if a response bag already carries
+; "fss-community:basics/status"; provided for domain-local refinement.
+fss-community-tlm-fields-response-status =
+      "ok"
+    / "decode-error"
+    / "slave-error"
+    / "address-error"
+    / "burst-error"
+    / "exclusive-fail"
+
+; Tag for pipelined requests.  qname: "fss-community:tlm-fields/tag"
+;
+; Used when responses are not delivered in request order.
+fss-community-tlm-fields-tag = uint .size 8

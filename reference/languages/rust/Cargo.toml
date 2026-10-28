@@ -1,0 +1,11 @@
+[package]
+name = "fss"
+version = "0.2.0"
+edition = "2021"
+description = "FSS language binding for Rust — ABI types + artefact authoring glue"
+publish = false
+
+# A library crate: artefact crates depend on it (path dependency) and emit the
+# C artefact ABI via fss_export_artefact!.  The binding itself links nothing.
+[lib]
+crate-type = ["rlib"]

@@ -1,0 +1,92 @@
+; ============================================================================
+;   fss-community:kv — generic key-value primitive
+; ============================================================================
+;
+;   Package:   fss-community:kv
+;   Version:   0.1.0
+;   Status:    NON-NORMATIVE community example
+;
+;   Generic key-value descriptors for use over a bag-stream.  Useful
+;   wherever a node exposes a name-keyed lookup surface:
+;
+;     - Configuration (the parent's config-source stream)
+;     - Inspection / monitoring registers
+;     - Simple control surfaces ("set X to Y")
+;     - Service-property advertisement
+;
+;   This package replaces the per-domain "config", "inspect", and
+;   "control" descriptors that earlier drafts kept separate.  Because
+;   they were structurally identical (a key, an opaque CBOR value, a
+;   status), one canonical set serves them all.
+;
+;   Domain packages that need richer typing layer their own typed
+;   descriptors on top — `kv` is just the generic primitive.
+;
+; ----------------------------------------------------------------------------
+
+; "Get the value for this key."
+;
+; qname: "fss-community:kv/get"
+fss-community-kv-get = {
+    key: tstr,
+}
+
+; "Here's a value (or `not-found`)."
+;
+; The `value` field is `any` — receivers know its expected CDDL type
+; from their own schema (or treat it as opaque CBOR if they don't).
+;
+; qname: "fss-community:kv/value"
+fss-community-kv-value = {
+    key:         tstr,
+    ? value:     any,
+    ? not-found: bool,
+    ? type:      tstr,        ; optional content-type hint, e.g. "u64", "tstr",
+                              ; "fss-community:tlm-fields/address"
+}
+
+; "Set this key to this value."
+;
+; qname: "fss-community:kv/set"
+fss-community-kv-set = {
+    key:    tstr,
+    value:  any,
+    ? type: tstr,
+}
+
+; "List keys under a prefix."
+;
+; qname: "fss-community:kv/list"
+fss-community-kv-list = {
+    ? prefix: tstr,           ; empty / absent → list all
+}
+
+; "Here are the keys (with optional metadata)."
+;
+; qname: "fss-community:kv/keys"
+fss-community-kv-keys = {
+    keys: [* fss-community-kv-key-entry],
+}
+
+fss-community-kv-key-entry = {
+    key:     tstr,
+    ? type:  tstr,
+    ? readable: bool,
+    ? writable: bool,
+}
+
+; "Watch this key — notify me when it changes."
+;
+; The notification flows back as a `value` bag on the same stream.
+; Out-of-scope for v0.1; included for completeness so deployments
+; that care can adopt it.
+;
+; qname: "fss-community:kv/watch"
+fss-community-kv-watch = {
+    key: tstr,
+}
+
+; qname: "fss-community:kv/unwatch"
+fss-community-kv-unwatch = {
+    key: tstr,
+}
